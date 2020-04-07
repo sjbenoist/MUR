@@ -1,0 +1,51 @@
+name: MUR Build
+on: [push, pull_request]
+jobs:
+  build:
+    name: ${{ matrix.arduino-boards-fqbn }} - test compiling examples
+    runs-on: ubuntu-latest
+    env:
+      REQUIRED_LIBRARIES: Adafruit NeoPixel,Servo
+    strategy:
+      matrix:
+        arduino-boards-fqbn:
+          - arduino:avr:mega
+          - arduino:avr:uno
+          - esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
+
+        include:
+          - arduino-boards-fqbn: arduino:avr:uno
+            sketch-names: WhistleSwitch.ino,SimpleFrequencyDetector.ino # Comma separated list of sketch names (no path required) or patterns to use in build
+            examples-build-properties:
+              WhistleSwitch:
+                -DDEBUG
+              SimpleFrequencyDetector:
+                -DINFO
+
+          - arduino-boards-fqbn: arduino:avr:uno|trace # UNO board with different build properties
+            examples-exclude: 50Hz # Comma separated list of (unique substrings of) example names to exclude in build
+            examples-build-properties:
+              WhistleSwitch:
+                -DDEBUG
+                -DTRACE
+
+          - arduino-boards-fqbn: esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
+            platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
+            examples-exclude: WhistleSwitch,50Hz,SimpleFrequencyDetector          
+
+      fail-fast: false
+      steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Compile all examples using the bash script arduino-test-compile.sh
+        env:
+          # Passing parameters to the script by setting the appropriate ENV_* variables.
+          ENV_ARDUINO_BOARD_FQBN: ${{ matrix.arduino-boards-fqbn }}
+          ENV_PLATFORM_URL: ${{ matrix.platform-url }}
+          ENV_REQUIRED_LIBRARIES: ${{ env.REQUIRED_LIBRARIES }}
+          ENV_EXAMPLES_EXCLUDE: ${{ matrix.examples-exclude }}
+          ENV_EXAMPLES_BUILD_PROPERTIES: ${{ toJson(matrix.examples-build-properties) }}
+        run: |
+          wget --quiet https://raw.githubusercontent.com/ArminJo/arduino-test-compile/master/arduino-test-compile.sh
+          chmod +x arduino-test-compile.sh
+          ./arduino-test-compile.sh
