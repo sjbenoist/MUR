@@ -2,10 +2,10 @@ name: MUR Build
 on: [push, pull_request]
 jobs:
   build:
-    name: ${{ matrix.arduino-boards-fqbn }} - test compiling examples
+    name: ${{ matrix.arduino-boards-fqbn }} - Arduino Compilation
     runs-on: ubuntu-latest
     env:
-      REQUIRED_LIBRARIES: Adafruit NeoPixel,Servo
+      REQUIRED_LIBRARIES: Adafruit NeoPixel,Servo, Adafruit BME280
     strategy:
       matrix:
         arduino-boards-fqbn:
@@ -14,15 +14,15 @@ jobs:
           - esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
 
         include:
-          - arduino-boards-fqbn: arduino:avr:uno
-            sketch-names: "*.ino" # Comma separated list of sketch names (no path required) or patterns to use in build
+          - arduino-boards-fqbn: arduino:avr:mega
+            sketch-names: "**.ino" # Comma separated list of sketch names (no path required) or patterns to use in build
             examples-build-properties:
               MUR:
                 -DDEBUG
               MURTest:
                 -DINFO
 
-          - arduino-boards-fqbn: arduino:avr:uno|trace # UNO board with different build properties
+          - arduino-boards-fqbn: arduino:avr:uno # UNO board with different build properties
             examples-exclude: MURTest # Comma separated list of (unique substrings of) example names to exclude in build
             examples-build-properties:
               MUR:
