@@ -10,7 +10,7 @@ jobs:
       uses: actions/checkout@master
       
     - name: Compile all examples
-        uses: ArminJo/arduino-test-compile@v2.0.0
+      uses: ArminJo/arduino-test-compile@v2.0.0
       with:
         arduino-board-fqbn: arduino:avr:mega
         sketch-names: "**.ino" 
