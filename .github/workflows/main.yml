@@ -15,7 +15,7 @@ jobs:
 
         include:
           - arduino-boards-fqbn: arduino:avr:uno
-            sketch-names: WhistleSwitch.ino,SimpleFrequencyDetector.ino # Comma separated list of sketch names (no path required) or patterns to use in build
+            sketch-names: MUR.ino # Comma separated list of sketch names (no path required) or patterns to use in build
             examples-build-properties:
               WhistleSwitch:
                 -DDEBUG
