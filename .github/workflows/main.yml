@@ -14,4 +14,4 @@ jobs:
       with:
         arduino-board-fqbn: arduino:avr:mega
         sketch-names: "**.ino" 
-        required-libraries: Servo,Adafruit BME280,Wire     
+        required-libraries: Servo,Adafruit_BME280,Wire     
